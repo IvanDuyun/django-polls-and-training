@@ -13,6 +13,7 @@ polls/__init__.py
 polls/admin.py
 polls/apps.py
 polls/models.py
+polls/signals.py
 polls/tests.py
 polls/urls.py
 polls/views.py

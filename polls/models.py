@@ -3,11 +3,17 @@ import datetime
 from django.contrib import admin
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
 
 
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        default=None,
+    )
 
     def __str__(self):
         return self.question_text
@@ -28,3 +34,4 @@ class Choice(models.Model):
 
     def __str__(self):
         return self.choice_text
+
