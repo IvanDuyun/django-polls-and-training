@@ -12,7 +12,7 @@ class Question(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        default=None,
+        null=True,
     )
 
     def __str__(self):

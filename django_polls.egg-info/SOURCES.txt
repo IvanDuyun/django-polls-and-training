@@ -17,7 +17,6 @@ polls/signals.py
 polls/tests.py
 polls/urls.py
 polls/views.py
-polls/migrations/0001_initial.py
 polls/migrations/__init__.py
 polls/static/polls/style.css
 polls/static/polls/images/background.gif
