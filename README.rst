@@ -30,7 +30,8 @@ Quick start
 
 6. The author_changed signal is written, which responds to a change in the Author field in the Question.
 
-To connect a signal, you need to create a receivers.py file in the application with writing a connection to the signal. In the apps.py of the application, write the def ready () method with the import of the receivers.py file. See example below:
+To connect a signal, you need to create a receivers.py file in the application with writing a connection to the signal. 
+In the apps.py of the application, write the def ready () method with the import of the receivers.py file. See example below:
 
 -----------
 receivers.py:
