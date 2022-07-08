@@ -28,10 +28,22 @@ Quick start
 
 5. Visit http://127.0.0.1:8000/polls/ to participate in the poll.
 -----------
-<from django.dispatch import receiver
+receivers.py:
+from django.dispatch import receiver
 from polls import signals
 
 
 @receiver(signals.author_changed)
 def my_task_done(sender, **kwargs):
-    print('Сигнал принял: автор изменился')>
+    print('Сигнал принял: автор изменился')
+-----------
+apps.py:
+from django.apps import AppConfig
+
+
+class ReceiverConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'receiver'
+
+    def ready(self):
+        from . import receivers
