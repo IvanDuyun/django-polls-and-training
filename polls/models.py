@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
+from . import signals
 
 
 class Question(models.Model):
@@ -14,8 +15,21 @@ class Question(models.Model):
         on_delete=models.CASCADE,
     )
 
+    __original_author = None
+
     def __str__(self):
         return self.question_text
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__original_author = self.author
+
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
+        if self.author != self.__original_author:
+            print('Отправляю сигнал: автор изменился')
+            signals.author_changed.send(sender=self)
+        super().save(force_insert, force_update, *args, **kwargs)
+        self.__original_name = self.author
 
     @admin.display(
         boolean=True,

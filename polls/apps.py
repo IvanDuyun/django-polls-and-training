@@ -6,8 +6,8 @@ class PollsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'polls'
 
-    def ready(self):
+    #def ready(self):
         # Implicitly connect signal handlers decorated with @receiver.
-        from . import signals
+        #from . import signals
         # Explicitly connect a signal handler.
-        post_save.connect(signals.post_save_question)
+        #post_save.connect(signals.post_save_question)
