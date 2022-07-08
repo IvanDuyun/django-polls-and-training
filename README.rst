@@ -27,6 +27,11 @@ Quick start
    to create a poll (you'll need the Admin app enabled).
 
 5. Visit http://127.0.0.1:8000/polls/ to participate in the poll.
+
+6. The author_changed signal is written, which responds to a change in the Author field in the Question.
+
+To connect a signal, you need to create a receivers.py file in the application with writing a connection to the signal. In the apps.py of the application, write the def ready () method with the import of the receivers.py file. See example below:
+
 -----------
 receivers.py:
 from django.dispatch import receiver
