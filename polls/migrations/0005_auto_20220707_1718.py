@@ -7,7 +7,7 @@ def write_author(apps, schema_editor):
     # We can't import the Question model directly as it may be a newer
     # version than this migration expects. We use the historical version.
     Question = apps.get_model('polls', 'Question')
-    user = apps.get_model('auth', 'User').objects.get(id=1)
+    user = apps.get_model('auth', 'User').objects.get_or_create(id=1)
     for question in Question.objects.all():
         question.author = user
         question.save()

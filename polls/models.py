@@ -18,16 +18,13 @@ class QuestionManager(models.Manager):
     def filter_ab(self):
         return self.get_queryset().filter(Q(question_text__startswith='A') | Q(question_text__startswith='B'))
 
+
 class QuestionQuerySet(models.QuerySet):
     def count_questions(self):
-        return Question.objects.count()
+        return self.count()
 
     def annotate_votes(self):
-        return Question.objects.annotate(votes_cnt=Sum('choice__votes'))
-
-
-class QuestionManagerFromQS(models.Manager):
-    pass
+        return self.annotate(votes_cnt=Sum('choice__votes'))
 
 
 class Question(models.Model):
@@ -39,7 +36,7 @@ class Question(models.Model):
     )
     objects = models.Manager()
     manager = QuestionManager()
-    manager_from_QS = QuestionManagerFromQS.from_queryset(QuestionQuerySet)()
+    manager_from_QS = models.Manager.from_queryset(QuestionQuerySet)()
 
     __original_author = None
 
@@ -69,10 +66,14 @@ class Question(models.Model):
         votes_set = Question.manager_from_QS.annotate_votes()
         for votes in votes_set:
             print('%s: %s;' % (votes.question_text, votes.votes_cnt))
-        print('4. Всего голосов до вызова all_votes_inc: %s' % Choice.manager.count_questions())
+        print('4. Всего голосов до вызова votes_inc: %s' % Choice.manager.count_all_votes())
         print('   Всего вариантов выбора: %s' % Choice.manager.count_choice())
         Choice.all_votes_inc()
-        print('   Всего голосов после вызова all_votes_inc: %s' % Choice.manager.count_questions())
+        print('   Всего голосов после вызова votes_inc: %s' % Choice.manager.count_all_votes())
+
+        print('   Голосов в Choice (pk=1) до вызова votes_inc: %s' % Choice.manager.count_votes(2))
+        Choice.votes_inc(2)
+        print('   Голосов в Choice (pk=1) после вызова votes_inc: %s' % Choice.manager.count_votes(2))
 
         filter_ab_question_set = Question.manager.filter_ab()
         print('5. Все вопросы с букв A,B:')
@@ -102,8 +103,11 @@ class Question(models.Model):
 
 
 class ChoiceManager(models.Manager):
-    def count_questions(self):
+    def count_all_votes(self):
         return self.get_queryset().aggregate(Sum('votes'))
+
+    def count_votes(self, id_choice):
+        return self.get_queryset().filter(pk=id_choice).first().votes
 
     def count_choice(self):
         return self.get_queryset().count()
@@ -121,5 +125,9 @@ class Choice(models.Model):
         return self.choice_text
 
     @staticmethod
+    def votes_inc(id_choice):
+        Choice.objects.filter(pk=id_choice).update(votes=F('votes')+1)
+
+    @staticmethod
     def all_votes_inc():
-        Choice.objects.all().update(votes=F('votes')+1)
+        Choice.objects.all().update(votes=F('votes') + 1)
