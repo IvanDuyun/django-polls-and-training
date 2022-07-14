@@ -1,6 +1,6 @@
 import datetime
 
-from django.db.models import F, Sum, Count,Q
+from django.db.models import F, Sum, Count, Q
 from django.contrib import admin
 from django.db import models
 from django.utils import timezone
@@ -71,9 +71,9 @@ class Question(models.Model):
         Choice.all_votes_inc()
         print('   Всего голосов после вызова votes_inc: %s' % Choice.manager.count_all_votes())
 
-        print('   Голосов в Choice (pk=1) до вызова votes_inc: %s' % Choice.manager.count_votes(2))
+        print('   Голосов в Choice (pk=2) до вызова votes_inc: %s' % Choice.manager.count_votes(2))
         Choice.votes_inc(2)
-        print('   Голосов в Choice (pk=1) после вызова votes_inc: %s' % Choice.manager.count_votes(2))
+        print('   Голосов в Choice (pk=2) после вызова votes_inc: %s' % Choice.manager.count_votes(2))
 
         filter_ab_question_set = Question.manager.filter_ab()
         print('5. Все вопросы с букв A,B:')
