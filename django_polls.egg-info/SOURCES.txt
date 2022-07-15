@@ -12,6 +12,7 @@ django_polls.egg-info/top_level.txt
 polls/__init__.py
 polls/admin.py
 polls/apps.py
+polls/forms.py
 polls/models.py
 polls/signals.py
 polls/tests.py
@@ -28,5 +29,7 @@ polls/migrations/__init__.py
 polls/static/polls/style.css
 polls/static/polls/images/background.gif
 polls/templates/polls/detail.html
+polls/templates/polls/donator_detail.html
+polls/templates/polls/donator_list.html
 polls/templates/polls/index.html
 polls/templates/polls/results.html

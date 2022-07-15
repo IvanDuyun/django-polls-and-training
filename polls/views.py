@@ -3,8 +3,10 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
+from django.db import transaction
+import time
 
-from .models import Choice, Question
+from .models import Choice, Question, Donator, DonatorBalance
 
 
 class IndexView(generic.ListView):
@@ -54,3 +56,33 @@ def vote(request, question_id):
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
         return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+
+def donator_list(request):
+    donators = Donator.objects.all()
+    return render(request, 'polls/donator_list.html', {'donators': donators})
+
+def change_balance(request, donator, action):
+    value = int(request.POST.get(action))
+    try:
+        with transaction.atomic():
+            if action == 'replenish':
+                donator.balance.money += value
+                donator.balance.save()
+            elif action == 'withdraw':
+                if donator.balance.money < value:
+                    donator.balance.save()
+                else:
+                    donator.balance.money -= value
+                    donator.balance.save()
+    except:
+        change_balance(request, donator, action)
+
+def donator_detail(request, pk):
+    donator = get_object_or_404(Donator, pk=pk)
+    if request.method == "POST":
+        if request.POST.get('b_replenish'):
+            change_balance(request, donator, 'replenish')
+        elif request.POST.get('b_withdraw'):
+            change_balance(request, donator, 'withdraw')
+        return HttpResponseRedirect(reverse('polls:donator_detail', args=(donator.id,)))
+    return render(request, 'polls/donator_detail.html', {'donator': donator})

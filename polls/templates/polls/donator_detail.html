@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Donator</title>
+</head>
+<body>
+    <form action="{% url 'polls:donator_detail' donator.id %}" method="post">
+    {% csrf_token %}
+    <fieldset>
+        <h1>{{ donator.name }}</h1>
+        <h1>{{ donator.balance }}</h1>
+    </fieldset>
+    <input type="submit" value="Пополнить" name="b_replenish"> <input type="text" name="replenish">
+    <input type="submit" value="Списать" name="b_withdraw"> <input type="text" name="withdraw">
+    </form>
+</body>
+</html>

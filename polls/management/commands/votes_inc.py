@@ -39,13 +39,13 @@ class Command(BaseCommand):
         choice.update(votes=F('votes') + 1)
         self.print_results(id_choice)
 
+    @transaction.atomic
     def votes_inc_modified_with_transaction(self, id_choice):
         choices = Choice.objects.select_for_update().filter(pk=id_choice)
         self.go_sleep(5, id_choice)
-        with transaction.atomic():
-            for choice in choices:
-                choice.votes += 1
-                choice.save()
+        for choice in choices:
+            choice.votes += 1
+            choice.save()
         self.print_results(id_choice)
 
     def handle(self, way, id_choice, *args, **options):

@@ -27,6 +27,20 @@ class QuestionQuerySet(models.QuerySet):
         return self.annotate(votes_cnt=Sum('choice__votes'))
 
 
+class DonatorBalance(models.Model):
+    money = models.FloatField(default=0)
+
+    def __str__(self):
+        return str(self.money)
+
+
+class Donator(models.Model):
+    name = models.CharField(max_length=200)
+    balance = models.ForeignKey(DonatorBalance, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return self.name
+
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
@@ -34,6 +48,7 @@ class Question(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
+    donator = models.ForeignKey(Donator, on_delete=models.CASCADE, null=True)
     objects = models.Manager()
     manager = QuestionManager()
     manager_from_QS = models.Manager.from_queryset(QuestionQuerySet)()
