@@ -71,10 +71,10 @@ def author_balance_detail(request, pk):
         try:
             with transaction.atomic():
                 if form.is_valid():
-                    if form.cleaned_data['replenish']:
-                        author_balance.balance += form.cleaned_data['change']
-                    elif form.cleaned_data['withdraw']:
-                        author_balance.balance -= form.cleaned_data['change']
+                    change = form.cleaned_data['change']
+                    if form.cleaned_data['withdraw']:
+                        change *= -1
+                    author_balance.balance += change
                     author_balance.save()
                     return HttpResponseRedirect(reverse('polls:author_balance_detail',
                                                         args=(author_balance.id,)))
