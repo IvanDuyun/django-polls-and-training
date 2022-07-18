@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Authors</title>
+</head>
+<body>
+    {% for author in author_balance_all %}
+        <ul>
+            <h2><a href="{% url 'polls:author_balance_detail' pk=author.pk %}">{{ author }}</a></h2>
+        </ul>
+    {% endfor %}
+</body>
+</html>

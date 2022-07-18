@@ -25,11 +25,13 @@ polls/migrations/0001_initial.py
 polls/migrations/0004_alter_question_author.py
 polls/migrations/0005_auto_20220707_1718.py
 polls/migrations/0006_alter_question_author.py
+polls/migrations/0007_authorbalance.py
+polls/migrations/0008_auto_20220718_0939.py
 polls/migrations/__init__.py
 polls/static/polls/style.css
 polls/static/polls/images/background.gif
+polls/templates/polls/author_balance_detail.html
+polls/templates/polls/author_balance_list.html
 polls/templates/polls/detail.html
-polls/templates/polls/donator_detail.html
-polls/templates/polls/donator_list.html
 polls/templates/polls/index.html
 polls/templates/polls/results.html

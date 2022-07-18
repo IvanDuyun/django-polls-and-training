@@ -4,9 +4,10 @@ from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 from django.db import transaction
+from .forms import AuthorBalanceForm
 import time
 
-from .models import Choice, Question, Donator, DonatorBalance
+from .models import Choice, Question, AuthorBalance
 
 
 class IndexView(generic.ListView):
@@ -57,32 +58,28 @@ def vote(request, question_id):
         # user hits the Back button.
         return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
 
-def donator_list(request):
-    donators = Donator.objects.all()
-    return render(request, 'polls/donator_list.html', {'donators': donators})
 
-def change_balance(request, donator, action):
-    value = int(request.POST.get(action))
-    try:
-        with transaction.atomic():
-            if action == 'replenish':
-                donator.balance.money += value
-                donator.balance.save()
-            elif action == 'withdraw':
-                if donator.balance.money < value:
-                    donator.balance.save()
-                else:
-                    donator.balance.money -= value
-                    donator.balance.save()
-    except:
-        change_balance(request, donator, action)
+def author_balance_list(request):
+    author_balance_all = AuthorBalance.objects.all()
+    return render(request, 'polls/author_balance_list.html', {'author_balance_all': author_balance_all})
 
-def donator_detail(request, pk):
-    donator = get_object_or_404(Donator, pk=pk)
+
+def author_balance_detail(request, pk):
+    author_balance = get_object_or_404(AuthorBalance, pk=pk)
     if request.method == "POST":
-        if request.POST.get('b_replenish'):
-            change_balance(request, donator, 'replenish')
-        elif request.POST.get('b_withdraw'):
-            change_balance(request, donator, 'withdraw')
-        return HttpResponseRedirect(reverse('polls:donator_detail', args=(donator.id,)))
-    return render(request, 'polls/donator_detail.html', {'donator': donator})
+        form = AuthorBalanceForm(request.POST, instance=author_balance)
+        try:
+            with transaction.atomic():
+                if form.is_valid():
+                    if form.cleaned_data['replenish']:
+                        author_balance.balance += form.cleaned_data['change']
+                    elif form.cleaned_data['withdraw']:
+                        author_balance.balance -= form.cleaned_data['change']
+                    author_balance.save()
+                    return HttpResponseRedirect(reverse('polls:author_balance_detail',
+                                                        args=(author_balance.id,)))
+        except:
+            author_balance_detail(request, pk)
+    else:
+        form = AuthorBalanceForm(instance=author_balance)
+    return render(request, 'polls/author_balance_detail.html', {'form': form})
