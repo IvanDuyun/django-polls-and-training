@@ -5,6 +5,7 @@ from django.views import generic
 from django.utils import timezone
 from django.db import transaction
 from .forms import AuthorBalanceForm
+from django.contrib.auth import get_user_model
 import time
 
 from .models import Choice, Question, AuthorBalance
@@ -60,20 +61,20 @@ def vote(request, question_id):
 
 
 def author_balance_list(request):
-    author_balance_all = AuthorBalance.objects.all()
-    return render(request, 'polls/author_balance_list.html', {'author_balance_all': author_balance_all})
+    author_all = AuthorBalance.objects.all()
+    return render(request, 'polls/author_balance_list.html', {'author_all': author_all})
 
 
 def author_balance_detail(request, pk):
-    author_balance = get_object_or_404(AuthorBalance, pk=pk)
     if request.method == "POST":
-        form = AuthorBalanceForm(request.POST, instance=author_balance)
         try:
             with transaction.atomic():
+                author_balance = AuthorBalance.objects.select_for_update().filter(pk=pk).first()
+                form = AuthorBalanceForm(request.POST, instance=author_balance)
                 if form.is_valid():
                     change = form.cleaned_data['change']
-                    if form.cleaned_data['withdraw']:
-                        change *= -1
+                    if form.cleaned_data['action'] == '2':
+                        change = -change
                     author_balance.balance += change
                     author_balance.save()
                     return HttpResponseRedirect(reverse('polls:author_balance_detail',
@@ -81,5 +82,5 @@ def author_balance_detail(request, pk):
         except:
             author_balance_detail(request, pk)
     else:
-        form = AuthorBalanceForm(instance=author_balance)
+        form = AuthorBalanceForm(instance=get_object_or_404(AuthorBalance, pk=pk))
     return render(request, 'polls/author_balance_detail.html', {'form': form})

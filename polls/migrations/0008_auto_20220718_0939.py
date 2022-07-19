@@ -6,11 +6,8 @@ from django.db import migrations
 def write_author_balance(apps, schema_editor):
     # We can't import the Question model directly as it may be a newer
     # version than this migration expects. We use the historical version.
-    AuthorBalance = apps.get_model('polls', 'AuthorBalance')
     user = apps.get_model('auth', 'User').objects.get_or_create(id=1)
-    for AuthorBalance in AuthorBalance.objects.all():
-        AuthorBalance.author = user
-        AuthorBalance.save()
+    apps.get_model('polls', 'AuthorBalance').update(author=user)
 
 
 class Migration(migrations.Migration):
