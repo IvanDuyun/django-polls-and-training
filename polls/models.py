@@ -27,12 +27,18 @@ class QuestionQuerySet(models.QuerySet):
         return self.annotate(votes_cnt=Sum('choice__votes'))
 
 
+class AuthorBalanceManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().select_related('author')
+
+
 class AuthorBalance(models.Model):
     balance = models.FloatField(default=0)
     author = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    objects = AuthorBalanceManager()
 
     def __str__(self):
-        return self.author.username
+        return str(self.author)
 
 class Question(models.Model):
     question_text = models.CharField(max_length=200)

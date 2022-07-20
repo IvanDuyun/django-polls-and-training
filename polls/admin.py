@@ -1,6 +1,8 @@
 from django.contrib import admin
-
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import User
 from .models import Choice, Question, AuthorBalance
+from django.contrib.auth import get_user_model
 
 
 class ChoiceInline(admin.TabularInline):
@@ -8,6 +10,7 @@ class ChoiceInline(admin.TabularInline):
     extra = 3
 
 
+@admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
     fieldsets = [
         (None,               {'fields': ['question_text', 'author',]}),
@@ -19,5 +22,14 @@ class QuestionAdmin(admin.ModelAdmin):
     search_fields = ['question_text']
 
 
-admin.site.register(Question, QuestionAdmin)
-admin.site.register(AuthorBalance)
+class AuthorInline(admin.StackedInline):
+    model = AuthorBalance
+    can_delete = False
+    verbose_name_plural = 'author'
+
+# Define a new User admin
+class UserAdmin(BaseUserAdmin):
+    inlines = (AuthorInline,)
+
+admin.site.unregister(get_user_model())
+admin.site.register(get_user_model(), UserAdmin)
