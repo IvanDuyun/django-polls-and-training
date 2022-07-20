@@ -6,7 +6,9 @@ from . import models
 class AuthorBalanceForm(forms.ModelForm):
     balance = FloatField(disabled=True)
     author = IntegerField(disabled=True)
-    action = forms.ChoiceField(choices=(("1", "Пополнить"), ("2", "Списать")))
+    WITHDRAW = 2
+    REPLENISH = 1
+    action = forms.ChoiceField(choices=((REPLENISH, "Пополнить"), (WITHDRAW, "Списать")))
     change = FloatField(min_value=0)
 
     class Meta:
