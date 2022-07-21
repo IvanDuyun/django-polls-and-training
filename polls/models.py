@@ -8,6 +8,32 @@ from django.conf import settings
 from . import signals
 
 
+class CommonTariff(models.Model):
+    TARIFF_CHOICES = (
+        ('1', 'Fixed'),
+        ('2', 'Variable'),
+    )
+    author = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+    category = models.CharField(choices=TARIFF_CHOICES, max_length=100, default=1)
+    price = models.FloatField(default=0)
+
+    class Meta:
+        abstract = True
+
+
+class TariffFixed(CommonTariff):
+    pass
+
+
+class TariffVariable(CommonTariff):
+    price_the_question = models.FloatField(default=0)
+
+
+class CategoryTariff(CommonTariff):
+    fixed = models.OneToOneField(TariffFixed, on_delete=models.CASCADE, null=True, blank=True)
+    variable = models.OneToOneField(TariffVariable, on_delete=models.CASCADE, null=True, blank=True)
+
+
 class QuestionManager(models.Manager):
     def count_questions(self):
         return self.get_queryset().count()
