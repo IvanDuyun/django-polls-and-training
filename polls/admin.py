@@ -1,9 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import User
-from .models import Choice, Question, AuthorBalance, TariffFixed, TariffVariable, CategoryTariff
+from .models import Choice, Question, AuthorBalance, TariffFixed, TariffVariable, CommonTariff
 from django.contrib.auth import get_user_model
-from django import forms
 
 
 class ChoiceInline(admin.TabularInline):
@@ -14,7 +12,7 @@ class ChoiceInline(admin.TabularInline):
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None,               {'fields': ['question_text', 'author',]}),
+        (None, {'fields': ['question_text', 'author', ]}),
         ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
     ]
     inlines = [ChoiceInline]
@@ -29,35 +27,29 @@ class AuthorInline(admin.StackedInline):
     verbose_name_plural = 'author'
 
 
-class TariffFixedInline(admin.StackedInline):
-    model = TariffFixed
+@admin.register(TariffFixed)
+class TariffFixedInline(admin.ModelAdmin):
+    list_display = ('author', 'get_current_price')
 
 
-class TariffVariableInline(admin.StackedInline):
-    model = TariffVariable
+@admin.register(TariffVariable)
+class TariffVariableInline(admin.ModelAdmin):
+    list_display = ('author', 'get_current_price')
 
 
-class CategoryTariffInline(admin.StackedInline):
-    model = CategoryTariff
-
-    def get_readonly_fields(self, request, obj=None):
-        if obj.categorytariff.category == '2':
-            return ['price']
-        return []
-
-    def get_fields(self, request, obj=None):
-        if obj.categorytariff.category == '1':
-            return ['category', 'price', 'fixed']
-        if obj.categorytariff.category == '2':
-            return ['category', 'price', 'variable']
+class CommonTariffInline(admin.TabularInline):
+    model = CommonTariff
 
 
-# Define a new User admin
 class UserAdmin(BaseUserAdmin):
-    #inlines = (AuthorInline, TariffFixedInline, TariffVariableInline)
-    inlines = (AuthorInline, CategoryTariffInline)
+    inlines = (AuthorInline, CommonTariffInline,)
+    list_display = ('username', 'current_price')
+
+    def current_price(self, obj):
+        child_tariff = TariffFixed.manager.get_child_tariff(obj) \
+                       or TariffVariable.manager.get_child_tariff(obj)
+        return child_tariff.get_current_price()
+
 
 admin.site.unregister(get_user_model())
 admin.site.register(get_user_model(), UserAdmin)
-admin.site.register(TariffFixed)
-admin.site.register(TariffVariable)

@@ -1,6 +1,5 @@
 import datetime
-
-from django.db.models import F, Sum, Count, Q
+from django.db.models import F, Sum, Q
 from django.contrib import admin
 from django.db import models
 from django.utils import timezone
@@ -8,37 +7,51 @@ from django.conf import settings
 from . import signals
 
 
-class CommonTariff(models.Model):
-    TARIFF_CHOICES = (
-        ('1', 'Fixed'),
-        ('2', 'Variable'),
-    )
-    author = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
-    category = models.CharField(choices=TARIFF_CHOICES, max_length=100, default=1)
-    price = models.FloatField(default=0)
+class TariffManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().select_related('author')
 
-    class Meta:
-        abstract = True
+    def get_child_tariff(self, author):
+        return self.get_queryset().filter(author=author).first()
+
+
+class CommonTariff(models.Model):
+    author = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+
+    objects = models.Manager()
+    manager = TariffManager()
+
+    def get_current_price(self):
+        pass
 
 
 class TariffFixed(CommonTariff):
-    pass
+    price = models.FloatField(default=0)
+
+    @admin.display(description='Price')
+    def get_current_price(self):
+        return self.price
 
 
 class TariffVariable(CommonTariff):
     price_the_question = models.FloatField(default=0)
 
-
-class CategoryTariff(CommonTariff):
-    fixed = models.OneToOneField(TariffFixed, on_delete=models.CASCADE, null=True, blank=True)
-    variable = models.OneToOneField(TariffVariable, on_delete=models.CASCADE, null=True, blank=True)
+    @admin.display(description='Price')
+    def get_current_price(self):
+        return self.price_the_question * Question.manager.count_questions_from_current_author(self.author)
 
 
 class QuestionManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().select_related('author')
+
     def count_questions(self):
         return self.get_queryset().count()
 
-    def annotate_votes(self):
+    def count_questions_from_current_author(self, author):
+        return self.get_queryset().filter(author=author).count()
+
+    def annotate_author(self):
         return self.get_queryset().annotate(votes_cnt=Sum('choice__votes'))
 
     def filter_ab(self):
@@ -66,6 +79,7 @@ class AuthorBalance(models.Model):
     def __str__(self):
         return str(self.author)
 
+
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
@@ -91,10 +105,10 @@ class Question(models.Model):
 
     @staticmethod
     def print_test():
-        print('1. Количество вопросов: %s' % Question.manager.count_questions())
+        print('1. Количество вопросов: %s' % Question.manager_from_QS.count_questions())
 
         print('2. Количество голосов в каждом опросе:')
-        votes_set = Question.manager.annotate_votes()
+        votes_set = Question.manager_from_QS.annotate_votes()
         for votes in votes_set:
             print('%s: %s;' % (votes.question_text, votes.votes_cnt))
 
@@ -165,7 +179,7 @@ class Choice(models.Model):
 
     @staticmethod
     def votes_inc(id_choice):
-        Choice.objects.filter(pk=id_choice).update(votes=F('votes')+1)
+        Choice.objects.filter(pk=id_choice).update(votes=F('votes') + 1)
 
     @staticmethod
     def all_votes_inc():
