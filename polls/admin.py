@@ -46,9 +46,7 @@ class UserAdmin(BaseUserAdmin):
     list_display = ('username', 'current_price')
 
     def current_price(self, obj):
-        child_tariff = TariffFixed.manager.get_child_tariff(obj) \
-                       or TariffVariable.manager.get_child_tariff(obj)
-        return child_tariff.get_current_price()
+        return obj.commontariff.get_current_tariff().get_current_price()
 
 
 admin.site.unregister(get_user_model())

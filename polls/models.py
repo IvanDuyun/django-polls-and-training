@@ -4,6 +4,9 @@ from django.contrib import admin
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
+from abc import ABC, abstractmethod
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from . import signals
 
 
@@ -11,16 +14,27 @@ class TariffManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().select_related('author')
 
-    def get_child_tariff(self, author):
-        return self.get_queryset().filter(author=author).first()
-
 
 class CommonTariff(models.Model):
+    TARIFF_CHOICES = (
+        ('1', 'Fixed'),
+        ('2', 'Variable'),
+    )
     author = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+    category = models.CharField(choices=TARIFF_CHOICES, max_length=100, default=1)
 
     objects = models.Manager()
     manager = TariffManager()
 
+    def get_current_tariff(self):
+        tariff = None
+        if self.category == '1':
+            tariff = TariffFixed
+        elif self.category == '2':
+            tariff = TariffVariable
+        return tariff.manager.filter(author=self.author).first()
+
+    @abstractmethod
     def get_current_price(self):
         pass
 
@@ -28,7 +42,10 @@ class CommonTariff(models.Model):
 class TariffFixed(CommonTariff):
     price = models.FloatField(default=0)
 
-    @admin.display(description='Price')
+    def clean(self):
+        if self.category != '1':
+            raise ValidationError(_('Для тарифа должна быть выбрана соответсвующая категория'))
+
     def get_current_price(self):
         return self.price
 
@@ -36,7 +53,10 @@ class TariffFixed(CommonTariff):
 class TariffVariable(CommonTariff):
     price_the_question = models.FloatField(default=0)
 
-    @admin.display(description='Price')
+    def clean(self):
+        if self.category != '2':
+            raise ValidationError(_('Для тарифа должна быть выбрана соответсвующая категория'))
+
     def get_current_price(self):
         return self.price_the_question * Question.manager.count_questions_from_current_author(self.author)
 
