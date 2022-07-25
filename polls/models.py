@@ -5,11 +5,34 @@ from django.db import models
 from django.utils import timezone
 from django.conf import settings
 from abc import ABC, abstractmethod
+from polymorphic.models import PolymorphicModel
 from . import signals
 
 
 FIXED = '1'
 VARIABLE = '2'
+
+
+class CommonTariffTwo(PolymorphicModel):
+    author = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+
+    @abstractmethod
+    def get_current_price(self):
+        pass
+
+
+class TariffFixedTwo(CommonTariffTwo):
+    price = models.FloatField(default=0)
+
+    def get_current_price(self):
+        return self.price
+
+
+class TariffVariableTwo(CommonTariffTwo):
+    price_the_question = models.FloatField(default=0)
+
+    def get_current_price(self):
+        return self.price_the_question * Question.manager.count_questions_from_current_author(self.author)
 
 
 class CommonTariff(models.Model):
@@ -20,8 +43,6 @@ class CommonTariff(models.Model):
     author = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     category = models.CharField(choices=TARIFF_CHOICES, max_length=100, default=1)
     CATEGORY = None
-
-    objects = models.Manager()
 
     def get_current_tariff(self):
         if self.category == FIXED:

@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin, PolymorphicChildModelFilter
 from .models import Choice, Question, AuthorBalance, TariffFixed, TariffVariable, CommonTariff
+from .models import CommonTariffTwo, TariffVariableTwo, TariffFixedTwo
 from django.contrib.auth import get_user_model
 
 
@@ -43,10 +45,29 @@ class CommonTariffInline(admin.TabularInline):
 
 class UserAdmin(BaseUserAdmin):
     inlines = (AuthorInline, CommonTariffInline,)
-    list_display = ('username', 'current_price')
+    list_display = ('username', 'current_price', 'current_price_two')
 
     def current_price(self, obj):
         return obj.commontariff.get_current_tariff().get_current_price()
+
+    def current_price_two(self, obj):
+        return obj.commontarifftwo.get_current_price()
+
+
+@admin.register(TariffVariableTwo)
+class TariffVariableTwoAdmin(PolymorphicChildModelAdmin):
+    base_model = TariffVariableTwo
+
+
+@admin.register(TariffFixedTwo)
+class TariffFixedTwoAdmin(TariffVariableTwoAdmin):
+    base_model = TariffFixedTwo
+
+
+@admin.register(CommonTariffTwo)
+class CommonTariffTwoAdmin(PolymorphicParentModelAdmin):
+    base_model = CommonTariffTwo
+    child_models = (TariffVariableTwo, TariffFixedTwo)
 
 
 admin.site.unregister(get_user_model())

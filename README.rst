@@ -14,6 +14,7 @@ Quick start
 
     INSTALLED_APPS = [
         ...
+        'polymorphic',
         'polls',
     ]
 
