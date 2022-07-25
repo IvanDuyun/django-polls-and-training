@@ -42,9 +42,9 @@ class CommonTariff(models.Model):
 class TariffFixed(CommonTariff):
     price = models.FloatField(default=0)
 
-    def clean(self):
-        if self.category != '1':
-            raise ValidationError(_('Для тарифа должна быть выбрана соответсвующая категория'))
+    def save(self, *args, **kwargs):
+        self.category = '1'  # нужно ли проверять, есть ли необходимость в перезаписи?
+        super().save(*args, **kwargs)
 
     def get_current_price(self):
         return self.price
@@ -53,9 +53,9 @@ class TariffFixed(CommonTariff):
 class TariffVariable(CommonTariff):
     price_the_question = models.FloatField(default=0)
 
-    def clean(self):
-        if self.category != '2':
-            raise ValidationError(_('Для тарифа должна быть выбрана соответсвующая категория'))
+    def save(self, *args, **kwargs):
+        self.category = '2'  # нужно ли проверять, есть ли необходимость в перезаписи?
+        super().save(*args, **kwargs)
 
     def get_current_price(self):
         return self.price_the_question * Question.manager.count_questions_from_current_author(self.author)
