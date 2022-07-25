@@ -5,34 +5,33 @@ from django.db import models
 from django.utils import timezone
 from django.conf import settings
 from abc import ABC, abstractmethod
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
 from . import signals
 
 
-class TariffManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().select_related('author')
+FIXED = '1'
+VARIABLE = '2'
 
 
 class CommonTariff(models.Model):
     TARIFF_CHOICES = (
-        ('1', 'Fixed'),
-        ('2', 'Variable'),
+        (FIXED, 'Fixed'),
+        (VARIABLE, 'Variable'),
     )
     author = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     category = models.CharField(choices=TARIFF_CHOICES, max_length=100, default=1)
+    CATEGORY = None
 
     objects = models.Manager()
-    manager = TariffManager()
 
     def get_current_tariff(self):
-        tariff = None
-        if self.category == '1':
-            tariff = TariffFixed
-        elif self.category == '2':
-            tariff = TariffVariable
-        return tariff.manager.filter(author=self.author).first()
+        if self.category == FIXED:
+            return self.tarifffixed
+        elif self.category == VARIABLE:
+            return self.tariffvariable
+
+    def save(self, *args, **kwargs):
+        self.category = self.CATEGORY
+        super().save(*args, **kwargs)
 
     @abstractmethod
     def get_current_price(self):
@@ -41,10 +40,7 @@ class CommonTariff(models.Model):
 
 class TariffFixed(CommonTariff):
     price = models.FloatField(default=0)
-
-    def save(self, *args, **kwargs):
-        self.category = '1'  # нужно ли проверять, есть ли необходимость в перезаписи?
-        super().save(*args, **kwargs)
+    CATEGORY = FIXED
 
     def get_current_price(self):
         return self.price
@@ -52,10 +48,7 @@ class TariffFixed(CommonTariff):
 
 class TariffVariable(CommonTariff):
     price_the_question = models.FloatField(default=0)
-
-    def save(self, *args, **kwargs):
-        self.category = '2'  # нужно ли проверять, есть ли необходимость в перезаписи?
-        super().save(*args, **kwargs)
+    CATEGORY = VARIABLE
 
     def get_current_price(self):
         return self.price_the_question * Question.manager.count_questions_from_current_author(self.author)
