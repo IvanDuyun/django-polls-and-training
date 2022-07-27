@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.conf import settings
 from abc import ABC, abstractmethod
 from polymorphic.models import PolymorphicModel
+from django.urls import reverse
 from . import signals
 
 
@@ -177,7 +178,7 @@ class Question(models.Model):
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
         super().save(force_insert, force_update, *args, **kwargs)
         self.send_signal()
-        self.print_test()
+        #self.print_test()
 
     @admin.display(
         boolean=True,

@@ -12,6 +12,7 @@ django_polls.egg-info/top_level.txt
 polls/__init__.py
 polls/admin.py
 polls/apps.py
+polls/custom_layout_object.py
 polls/forms.py
 polls/models.py
 polls/signals.py
@@ -31,8 +32,12 @@ polls/migrations/0009_alter_authorbalance_author.py
 polls/migrations/__init__.py
 polls/static/polls/style.css
 polls/static/polls/images/background.gif
+polls/static/polls/libraries/django-dynamic-formset/jquery.formset.js
 polls/templates/polls/author_balance_detail.html
 polls/templates/polls/author_balance_list.html
+polls/templates/polls/base.html
 polls/templates/polls/detail.html
+polls/templates/polls/formset.html
 polls/templates/polls/index.html
+polls/templates/polls/question_create.html
 polls/templates/polls/results.html

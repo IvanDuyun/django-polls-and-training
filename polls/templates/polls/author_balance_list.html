@@ -1,16 +1,11 @@
-<!DOCTYPE html>
-{% load static %}
+{% extends 'polls/base.html' %}
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Authors</title>
-</head>
-<body>
+{% block tittle %}Authors{% endblock tittle %}
+
+{% block content %}
     {% for author in author_all %}
         <ul>
             <h2><a href="{% url 'polls:author_balance_detail' pk=author.pk %}">{{ author }}</a></h2>
         </ul>
     {% endfor %}
-</body>
-</html>
+{% endblock content %}

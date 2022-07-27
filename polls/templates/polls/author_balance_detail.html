@@ -1,16 +1,11 @@
-<!DOCTYPE html>
-{% load static %}
+{% extends 'polls/base.html' %}
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Author balance</title>
-</head>
-<body>
+{% block tittle %}Author balance{% endblock tittle %}
+
+{% block content %}
     <h1></h1>
     <form method="POST" class="post-form">{% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Change" name="b_change">
     </form>
-</body>
-</html>
+{% endblock content %}
