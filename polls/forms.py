@@ -35,6 +35,12 @@ class ChoiceForm(forms.ModelForm):
         fields = ['choice_text', 'votes']
 
 
+class QuestionFormM(forms.ModelForm):
+    class Meta:
+        model = models.Question
+        fields = ['author', 'question_text', 'pub_date']
+
+
 class QuestionForm(forms.ModelForm):
 
     class Meta:

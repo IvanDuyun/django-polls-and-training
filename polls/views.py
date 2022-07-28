@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 from django.db import transaction
-from .forms import AuthorBalanceForm, ChoiceInlineFormset, QuestionForm
+from .forms import AuthorBalanceForm, ChoiceInlineFormset, QuestionForm, QuestionFormM
 from django.contrib.auth import get_user_model
 from django.views.generic.edit import CreateView, UpdateView
 from django.urls import reverse_lazy
@@ -12,6 +12,39 @@ from django.shortcuts import redirect
 import time
 
 from .models import Choice, Question, AuthorBalance
+
+
+def question_create_view(request):
+    if request.method == "POST":
+        form = QuestionFormM(request.POST, request.FILES)
+        formset = ChoiceInlineFormset(request.POST, request.FILES)
+        if form.is_valid():
+            question_instance = form.save()
+            if formset.is_valid():
+                choices = formset.save(commit=False)
+                for choice in choices:
+                    choice.question = question_instance
+                    choice.save()
+            return HttpResponseRedirect(reverse('polls:index'))
+    else:
+        form = QuestionFormM()
+        formset = ChoiceInlineFormset()
+    return render(request, 'polls/question_create_m.html', {'formset': formset, 'form': form})
+
+
+def question_update_view(request, pk):
+    question = Question.objects.get(pk=pk)
+    if request.method == "POST":
+        form = QuestionFormM(request.POST, request.FILES, instance=question)
+        formset = ChoiceInlineFormset(request.POST, request.FILES, instance=question)
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            formset.save()
+            return HttpResponseRedirect(reverse('polls:index'))
+    else:
+        form = QuestionFormM(instance=question)
+        formset = ChoiceInlineFormset(instance=question)
+    return render(request, 'polls/question_update_m.html', {'formset': formset, 'form': form})
 
 
 class QuestionCreateView(CreateView):
