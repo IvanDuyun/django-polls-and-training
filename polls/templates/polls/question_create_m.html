@@ -1,21 +1,16 @@
 {% extends "polls/base.html" %}
-{% block tittle %}New{% endblock tittle %}
+{% block tittle %}
+{% if instance %} Обновить {{ instance }} {% else %} Создать {% endif %}
+{% endblock tittle %}
 {% block content %}
 <form method="post" >
     {% csrf_token %}
         {{ form.as_p }}
         {{ formset.management_form }}
         {% for form in formset.forms %}
-            {% for field in form.visible_fields %}
-                {% for hidden in form.hidden_fields %}
-                    {{ hidden }}
-                {% endfor %}
-                <div class="fieldWrapper">
-                    {{ field.errors }}
-                    {{ field.label_tag }} {{ field }}
-                </div>
-            {% endfor %}
+            {{ form.as_p }}
         {% endfor %}
-    <button type="submit" class="btn btn-primary"><i class="fal fa-clipboard-check"></i> Submit Updated Scores</button>
+    <button type="submit" class="btn btn-primary"><i class="fal fa-clipboard-check">
+    </i>{% if instance %} Обновить {{ instance }} {% else %} Создать {% endif %}</button>
 </form>
 {% endblock content %}

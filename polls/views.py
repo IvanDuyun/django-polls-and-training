@@ -18,14 +18,15 @@ def question_create_view(request):
     if request.method == "POST":
         form = QuestionFormM(request.POST, request.FILES)
         formset = ChoiceInlineFormset(request.POST, request.FILES)
-        if form.is_valid():
-            question_instance = form.save()
-            if formset.is_valid():
-                choices = formset.save(commit=False)
-                for choice in choices:
-                    choice.question = question_instance
-                    choice.save()
-            return HttpResponseRedirect(reverse('polls:index'))
+        with transaction.atomic():
+            if form.is_valid():
+                question_instance = form.save()
+                if formset.is_valid():
+                    choices = formset.save(commit=False)
+                    for choice in choices:
+                        choice.question = question_instance
+                        choice.save()
+                return HttpResponseRedirect(reverse('polls:index'))
     else:
         form = QuestionFormM()
         formset = ChoiceInlineFormset()
