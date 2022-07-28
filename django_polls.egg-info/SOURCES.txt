@@ -41,5 +41,4 @@ polls/templates/polls/formset.html
 polls/templates/polls/index.html
 polls/templates/polls/question_create.html
 polls/templates/polls/question_create_m.html
-polls/templates/polls/question_update_m.html
 polls/templates/polls/results.html

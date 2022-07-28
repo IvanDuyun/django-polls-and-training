@@ -45,7 +45,7 @@ def question_update_view(request, pk):
     else:
         form = QuestionFormM(instance=question)
         formset = ChoiceInlineFormset(instance=question)
-    return render(request, 'polls/question_update_m.html', {'formset': formset, 'form': form})
+    return render(request, 'polls/question_create_m.html', {'formset': formset, 'form': form})
 
 
 class QuestionCreateView(CreateView):
