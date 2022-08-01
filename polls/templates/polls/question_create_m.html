@@ -1,6 +1,6 @@
 {% extends "polls/base.html" %}
 {% block tittle %}
-{% if instance %} Обновить {{ instance }} {% else %} Создать {% endif %}
+{% if form.instance.question_text != '' %} Обновить {{ form.instance }} {% else %} Создать {% endif %}
 {% endblock tittle %}
 {% block content %}
 <form method="post" >
@@ -11,6 +11,6 @@
             {{ form.as_p }}
         {% endfor %}
     <button type="submit" class="btn btn-primary"><i class="fal fa-clipboard-check">
-    </i>{% if instance %} Обновить {{ instance }} {% else %} Создать {% endif %}</button>
+    </i>{% if form.instance.question_text != '' %} Обновить {{ form.instance }} {% else %} Создать {% endif %}</button>
 </form>
 {% endblock content %}

@@ -4,14 +4,34 @@ from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 from django.db import transaction
-from .forms import AuthorBalanceForm, ChoiceInlineFormset, QuestionForm, QuestionFormM
-from django.contrib.auth import get_user_model
+from .forms import AuthorBalanceForm, ChoiceInlineFormset, QuestionForm, QuestionFormM, UserProfileForm
 from django.views.generic.edit import CreateView, UpdateView
 from django.urls import reverse_lazy
-from django.shortcuts import redirect
+from .models import Choice, Question, AuthorBalance, UserProfile
+from django.utils.http import url_has_allowed_host_and_scheme
+from polls import REDIRECT_FIELD_NAME
+from django.utils.encoding import iri_to_uri
 import time
 
-from .models import Choice, Question, AuthorBalance
+
+def get_redirect(request):
+    redirect_field_name = REDIRECT_FIELD_NAME
+    if url_has_allowed_host_and_scheme(request.POST[redirect_field_name], None):
+        return iri_to_uri(request.POST[redirect_field_name])
+    else:
+        raise
+
+
+def set_agreement(request, pk):
+    profile = UserProfile.objects.get(pk=pk)
+    if request.method == "POST":
+        form = UserProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(get_redirect(request))
+    else:
+        form = UserProfileForm(instance=profile)
+    return render(request, 'polls/agreement.html', {'form': form})
 
 
 def question_create_view(request):

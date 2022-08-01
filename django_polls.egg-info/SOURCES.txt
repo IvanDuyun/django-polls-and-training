@@ -14,6 +14,7 @@ polls/admin.py
 polls/apps.py
 polls/custom_layout_object.py
 polls/forms.py
+polls/middleware.py
 polls/models.py
 polls/signals.py
 polls/tests.py
@@ -29,10 +30,15 @@ polls/migrations/0006_alter_question_author.py
 polls/migrations/0007_authorbalance.py
 polls/migrations/0008_auto_20220718_0939.py
 polls/migrations/0009_alter_authorbalance_author.py
+polls/migrations/0010_commontariff_commontarifftwo_tarifffixed_and_more.py
+polls/migrations/0011_userprofile.py
+polls/migrations/0013_rename_user_userprofile_profile.py
+polls/migrations/0014_auto_20220729_1310.py
 polls/migrations/__init__.py
 polls/static/polls/style.css
 polls/static/polls/images/background.gif
 polls/static/polls/libraries/django-dynamic-formset/jquery.formset.js
+polls/templates/polls/agreement.html
 polls/templates/polls/author_balance_detail.html
 polls/templates/polls/author_balance_list.html
 polls/templates/polls/base.html
