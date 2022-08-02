@@ -1,0 +1,11 @@
+{% extends 'polls/base.html' %}
+
+{% block tittle %}Agreement{% endblock tittle %}
+
+{% block content %}
+    <h1></h1>
+    <form action="" method="POST" class="post-form">{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Change" name="b_change" >
+    </form>
+{% endblock content %}

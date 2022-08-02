@@ -70,4 +70,10 @@ class QuestionForm(forms.ModelForm):
 ChoiceInlineFormset = inlineformset_factory(models.Question, models.Choice, extra=3, form=ChoiceForm)
 
 
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = models.UserProfile
+        fields = ['agreement_accepted']
+
+
 

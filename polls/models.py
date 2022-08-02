@@ -6,12 +6,16 @@ from django.utils import timezone
 from django.conf import settings
 from abc import ABC, abstractmethod
 from polymorphic.models import PolymorphicModel
-from django.urls import reverse
 from . import signals
 
 
 FIXED = '1'
 VARIABLE = '2'
+
+
+class UserProfile(models.Model):
+    profile = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False)
+    agreement_accepted = models.BooleanField(default=False)
 
 
 class CommonTariffTwo(PolymorphicModel):
