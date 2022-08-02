@@ -16,15 +16,14 @@ import time
 
 def get_redirect(request):
     redirect_field_name = REDIRECT_FIELD_NAME
-    return request.POST[redirect_field_name]
-    '''if url_has_allowed_host_and_scheme(request.POST[redirect_field_name], None):
+    if url_has_allowed_host_and_scheme(request.POST[redirect_field_name], None):
         return iri_to_uri(request.POST[redirect_field_name])
     else:
-        raise'''
+        raise
 
 
-def set_agreement(request, pk):
-    profile = UserProfile.objects.get(pk=pk)
+def set_agreement(request, profile_id):
+    profile = UserProfile.objects.get(pk=profile_id)
     if request.method == "POST":
         form = UserProfileForm(request.POST, instance=profile)
         if form.is_valid():

@@ -20,10 +20,9 @@ class CheckAgreement:
     def __call__(self, request):
         if request.user.is_authenticated:
             if not request.user.userprofile.agreement_accepted:
-                if not request.path.partition('?next')[0] == reverse('polls:agreement',
-                                                                 args=(request.user.id,)):
-                    return redirect("%s?next=%s" % (reverse('polls:agreement',
-                                                            args=(request.user.id,)), request.path))
+                url_agreement = reverse('polls:agreement', args=(request.user.userprofile.id,))
+                if not request.path.partition('?next')[0] == url_agreement:
+                    return redirect("%s?next=%s" % (url_agreement, request.path))
         response = self.get_response(request)
 
         return response

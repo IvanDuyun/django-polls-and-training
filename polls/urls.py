@@ -14,5 +14,5 @@ urlpatterns = [
     path('<int:pk>/update/', views.QuestionUpdateView.as_view(), name='question_update'),
     path('new_m/', views.question_create_view, name='question_new_m'),  # m - manually
     path('update_m/<int:pk>', views.question_update_view, name='question_update_m'),
-    path('agreement/<int:pk>', views.set_agreement, name='agreement'),
+    path('agreement/<int:profile_id>', views.set_agreement, name='agreement'),
 ]
