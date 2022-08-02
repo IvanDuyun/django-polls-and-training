@@ -4,9 +4,8 @@
 
 {% block content %}
     <h1></h1>
-    <form action="{{ next }}" method="POST" class="post-form">{% csrf_token %}
+    <form action="" method="POST" class="post-form">{% csrf_token %}
         {{ form.as_p }}
-        <input type="hidden" name="next" value="{{ request.GET.next }}">
         <input type="submit" value="Change" name="b_change" >
     </form>
 {% endblock content %}

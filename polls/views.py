@@ -16,8 +16,8 @@ import time
 
 def get_redirect(request):
     redirect_field_name = REDIRECT_FIELD_NAME
-    if url_has_allowed_host_and_scheme(request.POST[redirect_field_name], None):
-        return iri_to_uri(request.POST[redirect_field_name])
+    if url_has_allowed_host_and_scheme(request.GET[redirect_field_name], None):
+        return iri_to_uri(request.GET[redirect_field_name])
     else:
         raise
 
