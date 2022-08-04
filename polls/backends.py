@@ -17,7 +17,7 @@ class UserProfileBackend(BaseBackend):
         print(request.headers)
         print(request.headers['Jwt'])
 
-        token = request.headers['bearer']
+        token = request.headers['Jwt']
 
         if token is None:
             return None
@@ -38,11 +38,13 @@ class UserProfileBackend(BaseBackend):
             msg = 'This user has been deactivated.'
             print(msg)
 
-        try:
+        return (user_profile, token)
+
+        '''try:
             if user_profile.profile.check_password(password) is True:
                 return (user_profile, token)
         except UserProfile.DoesNotExist:
-            pass
+            pass'''
 
         '''try:
             user_profile = UserProfile.objects.get(pk=profile_id)
