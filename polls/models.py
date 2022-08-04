@@ -5,7 +5,10 @@ from django.db import models
 from django.utils import timezone
 from django.conf import settings
 from abc import ABC, abstractmethod
+
+from django.utils.timezone import now
 from polymorphic.models import PolymorphicModel
+import jwt
 from . import signals
 
 
@@ -16,6 +19,17 @@ VARIABLE = '2'
 class UserProfile(models.Model):
     profile = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False)
     agreement_accepted = models.BooleanField(default=False)
+
+    def token(self):
+        return self._generate_jwt_token()
+
+    def _generate_jwt_token(self):
+        dt = now() + datetime.timedelta(days=1)
+        token = jwt.encode({
+            'id': self.profile.pk,
+            'exp': dt.utcfromtimestamp(dt.timestamp())
+        }, settings.SECRET_KEY, algorithm='HS256')
+        return token
 
 
 class CommonTariffTwo(PolymorphicModel):

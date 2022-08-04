@@ -2,6 +2,7 @@ import hashlib
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import redirect
+from django.utils.deprecation import MiddlewareMixin
 
 
 def add_field_url_hash(get_response):
@@ -11,6 +12,12 @@ def add_field_url_hash(get_response):
         return response
 
     return middleware
+
+
+class CustomHeaderMiddleware(MiddlewareMixin):
+    def process_request(self, request):
+        if request.user.is_authenticated:
+            request.META['HTTP_JWT'] = request.user.userprofile.token()
 
 
 class CheckAgreement:

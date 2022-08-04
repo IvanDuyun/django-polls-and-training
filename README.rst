@@ -31,7 +31,14 @@ Quick start
 
 6. The author_changed signal is written, which responds to a change in the Author field in the Question.
 
-To connect a signal, you need to create a receivers.py file in the application with writing a connection to the signal. 
+7. Add to your AUTHENTICATION_BACKENDS setting like this::
+
+    AUTHENTICATION_BACKENDS = [
+        'django.contrib.auth.backends.ModelBackend',
+        'polls.backends.UserProfileBackend',
+    ]
+
+8. To connect a signal, you need to create a receivers.py file in the application with writing a connection to the signal.
 In the apps.py of the application, write the def ready () method with the import of the receivers.py file. See example below:
 
 -----------
