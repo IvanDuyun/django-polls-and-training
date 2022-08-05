@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import redirect
 from django.utils.deprecation import MiddlewareMixin
+from django.contrib.auth import authenticate
 
 
 def add_field_url_hash(get_response):
@@ -14,10 +15,20 @@ def add_field_url_hash(get_response):
     return middleware
 
 
-class CustomHeaderMiddleware(MiddlewareMixin):
-    def process_request(self, request):
-        if request.user.is_authenticated:
-            request.META['HTTP_JWT'] = request.user.userprofile.token()
+class AuthMiddleWare:
+    def __init__(self, get_response):
+        self.get_response = get_response
+        # One-time configuration and initialization.
+
+    def __call__(self, request):
+        if not request.user.is_authenticated:
+            print('я мидлвар, ща вызову бэкенд аутентификацию')
+            user = authenticate(token=request.headers.get('Authorization'))
+            if user:
+                request.user = user
+                print('я мидлвар, переопределил юзера')
+        response = self.get_response(request)
+        return response
 
 
 class CheckAgreement:
