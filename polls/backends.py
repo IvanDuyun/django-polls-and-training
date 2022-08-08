@@ -1,21 +1,15 @@
 from django.conf import settings
-from django.contrib.auth.backends import BaseBackend, ModelBackend
-from django.contrib.auth import get_user_model
+from django.contrib.auth.backends import BaseBackend, ModelBackend, RemoteUserBackend
 from django.contrib.auth.models import User
 import jwt
-from polls.models import UserProfile
 
 
-class UserProfileBackend(ModelBackend):
-    def authenticate(self, request, username=None, password=None, **kwargs):
-        print('balaboba')
+class UserProfileBackend(BaseBackend):
+    def authenticate(self, request, **kwargs):
         token = request.headers.get('Authorization')
-        print(token)
-
         if token is None:
             print('No token')
-            return super().authenticate(self, username, password)
-
+            return None
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
         except:
@@ -28,11 +22,7 @@ class UserProfileBackend(ModelBackend):
             msg = 'No user matching this token was found.'
             print(msg)
             return None
-        if not user.is_active:
-            msg = 'This user has been deactivated.'
-            print(msg)
 
-        print(user)
         return user
 
     def get_user(self, user_id):

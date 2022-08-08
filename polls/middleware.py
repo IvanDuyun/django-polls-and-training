@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.shortcuts import redirect
 from django.utils.deprecation import MiddlewareMixin
 from django.contrib.auth import authenticate
-
+from django.contrib.auth.middleware import AuthenticationMiddleware
 
 
 def add_field_url_hash(get_response):
@@ -14,6 +14,20 @@ def add_field_url_hash(get_response):
         return response
 
     return middleware
+
+
+class AuthMiddleWare:
+    def __init__(self, get_response):
+        self.get_response = get_response
+        # One-time configuration and initialization.
+
+    def __call__(self, request):
+        if not request.user.is_authenticated:
+            user = authenticate(request)
+            if user:
+                request.user = user
+        response = self.get_response(request)
+        return response
 
 
 '''class AuthMiddleWare:
