@@ -11,7 +11,28 @@ from .models import Choice, Question, AuthorBalance, UserProfile
 from django.utils.http import url_has_allowed_host_and_scheme
 from polls import REDIRECT_FIELD_NAME
 from django.utils.encoding import iri_to_uri
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 import time
+
+
+def imitation_of_calculations():
+    time.sleep(5)
+    return 'ok'
+
+
+def view_for_test_cache_manually(request):
+    ok = cache.get('ok')
+    if not ok:
+        ok = imitation_of_calculations()
+        cache.set('ok', ok, 60)
+    return HttpResponse(ok)
+
+
+@cache_page(60)
+def view_for_test_cache_with_decorator(request):
+    ok = imitation_of_calculations()
+    return HttpResponse(ok)
 
 
 def get_redirect(request):
