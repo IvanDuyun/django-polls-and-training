@@ -26,7 +26,7 @@ class UserProfile(models.Model):
     def _generate_jwt_token(self):
         dt = now() + datetime.timedelta(days=1)
         token = jwt.encode({
-            'id': self.id,
+            'id': self.profile.id,
             'exp': dt.utcfromtimestamp(dt.timestamp())
         }, settings.SECRET_KEY, algorithm='HS256')
         return token

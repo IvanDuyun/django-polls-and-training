@@ -6,6 +6,7 @@ from django.utils.deprecation import MiddlewareMixin
 from django.contrib.auth import authenticate
 
 
+
 def add_field_url_hash(get_response):
     def middleware(request):
         request.url_hash = hashlib.sha256(request.path.encode('utf-8'))
@@ -15,7 +16,7 @@ def add_field_url_hash(get_response):
     return middleware
 
 
-class AuthMiddleWare:
+'''class AuthMiddleWare:
     def __init__(self, get_response):
         self.get_response = get_response
         # One-time configuration and initialization.
@@ -28,7 +29,7 @@ class AuthMiddleWare:
                 request.user = user
                 print('я мидлвар, переопределил юзера')
         response = self.get_response(request)
-        return response
+        return response'''
 
 
 class CheckAgreement:

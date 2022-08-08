@@ -6,13 +6,15 @@ import jwt
 from polls.models import UserProfile
 
 
-class UserProfileBackend(BaseBackend):
-    def authenticate(self, request, token=None):
-        print('я бэкенд аутентификация, приняла токен ', token)
+class UserProfileBackend(ModelBackend):
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        print('balaboba')
+        token = request.headers.get('Authorization')
+        print(token)
 
         if token is None:
             print('No token')
-            return None
+            return super().authenticate(self, username, password)
 
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
@@ -20,21 +22,18 @@ class UserProfileBackend(BaseBackend):
             msg = 'Invalid authentication. Could not decode token.'
             print(msg)
             return None
-
         try:
-            user_profile = UserProfile.objects.get(pk=payload['id']).profile
+            user = User.objects.get(pk=payload['id'])
         except:
             msg = 'No user matching this token was found.'
             print(msg)
             return None
-
-        if not user_profile.is_active:
+        if not user.is_active:
             msg = 'This user has been deactivated.'
             print(msg)
-            return None
 
-        print('возвращаю юзера', user_profile)
-        return user_profile
+        print(user)
+        return user
 
     def get_user(self, user_id):
         try:
