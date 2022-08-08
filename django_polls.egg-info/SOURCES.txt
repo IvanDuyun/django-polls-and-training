@@ -12,6 +12,7 @@ django_polls.egg-info/top_level.txt
 polls/__init__.py
 polls/admin.py
 polls/apps.py
+polls/backends.py
 polls/custom_layout_object.py
 polls/forms.py
 polls/middleware.py
