@@ -6,10 +6,13 @@ from django.contrib.auth import authenticate
 from django.core.cache import cache
 from django.http import HttpResponse
 from datetime import datetime as dt
+from django.db import transaction
+
 
 LIMIT_REQUESTS = 5
 TIME_OUT = 10
 TIME_BLOCK = 60*60
+
 
 class FilterIPMiddleware:
     def __init__(self, get_response):
@@ -22,20 +25,21 @@ class FilterIPMiddleware:
         if cache.get(block_key):
             return HttpResponse(status='429')
         cnt_requests = cache.get(ip_key)
-        if cnt_requests:
-            start_time = cache.get(time_key)
-            delta = (dt.now() - start_time).total_seconds()
-            if delta <= TIME_OUT and cnt_requests >= LIMIT_REQUESTS:
-                print('попався')
-                cache.delete_many([ip_key, time_key])
-                cache.add(block_key, '', TIME_BLOCK)
-            elif delta > TIME_OUT:
-                cache.delete_many([ip_key, time_key])
+        with transaction.atomic():
+            if cnt_requests:
+                start_time = cache.get(time_key)
+                delta = (dt.now() - start_time).total_seconds()
+                if delta <= TIME_OUT and cnt_requests >= LIMIT_REQUESTS:
+                    print('попався')
+                    cache.delete_many([ip_key, time_key])
+                    cache.add(block_key, '', TIME_BLOCK)
+                elif delta > TIME_OUT:
+                    cache.delete_many([ip_key, time_key])
+                else:
+                    cache.incr(ip_key, 1)
             else:
-                cache.incr(ip_key, 1)
-        else:
-            cache.add(time_key, dt.now())
-            cache.add(ip_key, 1)
+                cache.add(time_key, dt.now())
+                cache.add(ip_key, 1)
 
         response = self.get_response(request)
         return response
