@@ -41,6 +41,9 @@ class FilterIPMiddleware:
                 cache.set(past_time_key, now)
                 cache.set(between_mean_key, between_mean)
 
+                if cnt_requests >= LIMIT_REQUESTS*3:
+                    cache.decr(ip_key, LIMIT_REQUESTS)
+
                 if cnt_requests >= LIMIT_REQUESTS and frequency > LIMIT_REQUESTS/TIME_OUT:
                     cache.delete_many([ip_key, past_time_key, between_mean_key])
                     cache.add(block_key, 'block', TIME_BLOCK)
