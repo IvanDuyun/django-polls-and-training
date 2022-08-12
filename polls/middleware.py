@@ -29,7 +29,7 @@ class FilterIPMiddleware:
 
         with transaction.atomic():
             if cnt_requests:
-                cnt_delta = cnt_requests+1
+                cnt_delta = cnt_requests
                 past_time = cache.get(past_time_key)
                 between_mean = cache.get(between_mean_key)
                 now = dt.now()
@@ -40,6 +40,9 @@ class FilterIPMiddleware:
                 cache.incr(ip_key, 1)
                 cache.set(past_time_key, now)
                 cache.set(between_mean_key, between_mean)
+
+                print(cache.get(ip_key))
+                print(frequency)
 
                 if cnt_requests >= LIMIT_REQUESTS*3:
                     cache.decr(ip_key, LIMIT_REQUESTS)
