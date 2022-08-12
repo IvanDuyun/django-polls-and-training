@@ -8,7 +8,6 @@ class UserProfileBackend(BaseBackend):
     def authenticate(self, request, **kwargs):
         token = request.headers.get('Authorization')
         if token is None:
-            print('No token')
             return None
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])

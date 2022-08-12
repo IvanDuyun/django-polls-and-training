@@ -9,8 +9,8 @@ from datetime import datetime as dt
 from django.db import transaction
 
 
-LIMIT_REQUESTS = 5
-TIME_OUT = 10
+LIMIT_REQUESTS = 3
+TIME_OUT = 5
 TIME_BLOCK = 60*60
 
 
@@ -21,25 +21,34 @@ class FilterIPMiddleware:
     def __call__(self, request):
         ip_key = str(hash(request.META['REMOTE_ADDR']))
         block_key = ip_key + 'block'
-        time_key = ip_key + 'time'
+        past_time_key = ip_key + 'time'
+        between_mean_key = ip_key + 'between_mean'
         if cache.get(block_key):
             return HttpResponse(status='429')
         cnt_requests = cache.get(ip_key)
+
         with transaction.atomic():
             if cnt_requests:
-                start_time = cache.get(time_key)
-                delta = (dt.now() - start_time).total_seconds()
-                if delta <= TIME_OUT and cnt_requests >= LIMIT_REQUESTS:
-                    print('попався')
-                    cache.delete_many([ip_key, time_key])
-                    cache.add(block_key, '', TIME_BLOCK)
-                elif delta > TIME_OUT:
-                    cache.delete_many([ip_key, time_key])
-                else:
-                    cache.incr(ip_key, 1)
+                cnt_delta = cnt_requests+1
+                past_time = cache.get(past_time_key)
+                between_mean = cache.get(between_mean_key)
+                now = dt.now()
+                delta = (now - past_time).total_seconds()
+                between_mean = (between_mean*(cnt_delta-1) + delta)/cnt_delta
+                frequency = 1/between_mean
+
+                cache.incr(ip_key, 1)
+                cache.set(past_time_key, now)
+                cache.set(between_mean_key, between_mean)
+
+                if cnt_requests >= LIMIT_REQUESTS and frequency > LIMIT_REQUESTS/TIME_OUT:
+                    cache.delete_many([ip_key, past_time_key, between_mean_key])
+                    cache.add(block_key, 'block', TIME_BLOCK)
+                    return HttpResponse(status='429')
             else:
-                cache.add(time_key, dt.now())
                 cache.add(ip_key, 1)
+                cache.add(between_mean_key, 0)
+                cache.add(past_time_key, dt.now())
 
         response = self.get_response(request)
         return response
