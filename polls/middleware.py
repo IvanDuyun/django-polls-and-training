@@ -9,7 +9,7 @@ from datetime import datetime as dt
 from django.db import transaction
 
 
-LIMIT_REQUESTS = 3
+LIMIT_REQUESTS = 100
 TIME_OUT = 5
 MAX_FREQUENCY = LIMIT_REQUESTS/TIME_OUT
 TIME_BLOCK = 60*60

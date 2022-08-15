@@ -13,6 +13,7 @@ from polls import REDIRECT_FIELD_NAME
 from django.utils.encoding import iri_to_uri
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
+from django.views.decorators.http import condition, etag
 import time
 
 
@@ -137,6 +138,16 @@ class QuestionUpdateView(UpdateView):
                 choice_formset.instance = self.object
                 choice_formset.save()
         return super().form_valid(form)
+
+
+def latest_question(self):
+    return Question.objects.latest("pub_date").pub_date
+
+
+@condition(last_modified_func=latest_question)
+def question_list(request):
+    question_all = Question.objects.all()
+    return render(request, 'polls/index.html', {'latest_question_list': question_all})
 
 
 class IndexView(generic.ListView):
