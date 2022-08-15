@@ -20,7 +20,7 @@ class FilterIPMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        ip_key = str(hash(request.META['REMOTE_ADDR']))
+        ip_key = str(request.META['REMOTE_ADDR'])
         block_key = ip_key + 'block'
         past_time_key = ip_key + 'time'
         between_mean_key = ip_key + 'between_mean'
