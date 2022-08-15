@@ -9,7 +9,7 @@ from datetime import datetime as dt
 from django.db import transaction
 
 
-LIMIT_REQUESTS = 100
+LIMIT_REQUESTS = 3
 TIME_OUT = 5
 MAX_FREQUENCY = LIMIT_REQUESTS/TIME_OUT
 TIME_BLOCK = 60*60
@@ -22,8 +22,7 @@ class FilterIPMiddleware:
     def __call__(self, request):
         ip_key = str(request.META['REMOTE_ADDR'])
         block_key = ip_key + 'block'
-        past_time_key = ip_key + 'time'
-        between_mean_key = ip_key + 'between_mean'
+        info_tuple_key = ip_key + 'info'
         if cache.get(block_key):
             return HttpResponse(status='429')
         cnt_requests = cache.get(ip_key)
@@ -31,28 +30,27 @@ class FilterIPMiddleware:
         with transaction.atomic():
             if cnt_requests:
                 cnt_delta = cnt_requests
-                past_time = cache.get(past_time_key)
-                between_mean = cache.get(between_mean_key)
+                between_mean, past_time = cache.get(info_tuple_key)
                 now = dt.now()
                 delta = (now - past_time).total_seconds()
                 between_mean = (between_mean*(cnt_delta-1) + delta)/cnt_delta
                 frequency = 1/between_mean
 
                 cache.incr(ip_key, 1)
-                cache.set(past_time_key, now)
-                cache.set(between_mean_key, between_mean)
+                info_tuple = (between_mean, now)
+                cache.set(info_tuple_key, info_tuple)
 
                 if cnt_requests >= LIMIT_REQUESTS*3:
                     cache.decr(ip_key, LIMIT_REQUESTS)
 
                 if cnt_requests >= LIMIT_REQUESTS and frequency > MAX_FREQUENCY:
-                    cache.delete_many([ip_key, past_time_key, between_mean_key])
+                    cache.delete_many([ip_key, info_tuple_key])
                     cache.add(block_key, 'block', TIME_BLOCK)
                     return HttpResponse(status='429')
             else:
                 cache.add(ip_key, 1)
-                cache.add(between_mean_key, 0)
-                cache.add(past_time_key, dt.now())
+                info_tuple = (0, dt.now())
+                cache.set(info_tuple_key, info_tuple)
 
         response = self.get_response(request)
         return response
