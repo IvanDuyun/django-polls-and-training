@@ -17,6 +17,7 @@ polls/custom_layout_object.py
 polls/forms.py
 polls/middleware.py
 polls/models.py
+polls/send_requests.py
 polls/signals.py
 polls/tests.py
 polls/urls.py
