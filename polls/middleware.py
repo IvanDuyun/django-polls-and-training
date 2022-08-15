@@ -11,6 +11,7 @@ from django.db import transaction
 
 LIMIT_REQUESTS = 3
 TIME_OUT = 5
+MAX_FREQUENCY = LIMIT_REQUESTS/TIME_OUT
 TIME_BLOCK = 60*60
 
 
@@ -41,13 +42,10 @@ class FilterIPMiddleware:
                 cache.set(past_time_key, now)
                 cache.set(between_mean_key, between_mean)
 
-                print(cache.get(ip_key))
-                print(frequency)
-
                 if cnt_requests >= LIMIT_REQUESTS*3:
                     cache.decr(ip_key, LIMIT_REQUESTS)
 
-                if cnt_requests >= LIMIT_REQUESTS and frequency > LIMIT_REQUESTS/TIME_OUT:
+                if cnt_requests >= LIMIT_REQUESTS and frequency > MAX_FREQUENCY:
                     cache.delete_many([ip_key, past_time_key, between_mean_key])
                     cache.add(block_key, 'block', TIME_BLOCK)
                     return HttpResponse(status='429')
