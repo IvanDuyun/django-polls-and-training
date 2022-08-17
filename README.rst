@@ -121,19 +121,24 @@ In settings.py:
             'disable_existing_loggers': False,  # retain the default loggers
 
             'handlers': {
-                'file': {
+                'log_file': {
                     'class': 'logging.handlers.TimedRotatingFileHandler',
                     'filename': 'debug.log',
                     'level': 'DEBUG',
                     'when': 'H',
                     'interval': 1,
                 },
+                'block_file': {
+                    'class': 'logging.FileHandler',
+                    'filename': 'block.log',
+                    'level': 'INFO',
+                },
             },
 
             'loggers': {
                 '': {
                     'level': 'DEBUG',
-                    'handlers': ['file'],
+                    'handlers': ['log_file', 'block_file'],
                 },
             },
 

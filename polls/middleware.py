@@ -18,9 +18,6 @@ TIME_BLOCK = 60*60
 
 
 block_logger = logging.getLogger(__name__)
-block_handler = logging.FileHandler('block.log')
-block_handler.setLevel(logging.INFO)
-block_logger.addHandler(block_handler)
 
 
 class FilterIPMiddleware:
