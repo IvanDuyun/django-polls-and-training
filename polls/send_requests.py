@@ -19,9 +19,8 @@ def send_requests_for_training_cache(cnt, time_out=0):
 
 
 def send_json_for_test_question_api(pk):
-    sign = get_sign(pk)
-    print(sign)
-    param = {"pk": sign, "question_text": "how a uuuu", "pub_date": "2022-08-05 14:37:21", "author": "15"}
+    pk_sign = get_sign(pk)
+    param = {"pk": pk_sign, "question_text": "how a uuuu", "pub_date": "2022-08-05 14:37:21", "author": "15"}
     json_param = json.dumps(param)
     url = "http://127.0.0.1:8000/polls/%s/private/" % pk
     resp = requests.post(url, data=json_param)
