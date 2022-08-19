@@ -8,11 +8,16 @@ from django.http import HttpResponse
 from datetime import datetime as dt
 from django.db import transaction
 
+import logging
+
 
 LIMIT_REQUESTS = 3
 TIME_OUT = 5
 MAX_FREQUENCY = LIMIT_REQUESTS/TIME_OUT
 TIME_BLOCK = 60*60
+
+
+block_logger = logging.getLogger(__name__)
 
 
 class FilterIPMiddleware:
@@ -24,6 +29,7 @@ class FilterIPMiddleware:
         block_key = ip_key + 'block'
         info_tuple_key = ip_key + 'info'
         if cache.get(block_key):
+            block_logger.info('The following ip address is blocked:' + ip_key)
             return HttpResponse(status='429')
         cnt_requests = cache.get(ip_key)
 
