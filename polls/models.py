@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from django.utils.timezone import now
 from polymorphic.models import PolymorphicModel

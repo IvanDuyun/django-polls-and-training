@@ -13,13 +13,11 @@ from polls import REDIRECT_FIELD_NAME
 from django.utils.encoding import iri_to_uri
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
-from django.views.decorators.http import condition, etag
-from django.http import JsonResponse
+from django.views.decorators.http import condition
+from django.views.decorators.csrf import csrf_exempt
+from django.core.signing import TimestampSigner
 import time
 import json
-from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime as dt
-from django.core.signing import TimestampSigner
 
 
 MAX_AGE = 1

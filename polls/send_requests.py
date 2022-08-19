@@ -3,7 +3,6 @@ import requests
 import time
 from datetime import datetime as dt
 import json
-from django.core.signing import Signer
 from django.core.signing import TimestampSigner
 
 
@@ -31,7 +30,7 @@ def send_json_for_test_question_api(question_id, text_sign):
 
 def get_sign(text_sign):
     signer = TimestampSigner(SECRET_KEY)
-    return signer.sign(dt.now())
+    return signer.sign(text_sign)
 
 
 send_json_for_test_question_api(3, 'aloha')

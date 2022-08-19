@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin, PolymorphicChildModelFilter
+from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin
 from .models import Choice, Question, AuthorBalance, TariffFixed, TariffVariable, CommonTariff, UserProfile
 from .models import CommonTariffTwo, TariffVariableTwo, TariffFixedTwo
 from django.contrib.auth import get_user_model
