@@ -14,7 +14,34 @@ from django.utils.encoding import iri_to_uri
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 from django.views.decorators.http import condition, etag
+from django.http import JsonResponse
 import time
+import json
+from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime as dt
+from django.core.signing import TimestampSigner
+
+
+MAX_AGE = 1
+
+
+@csrf_exempt
+def question_api(request, pk):
+    """Task 11 (Json and Cryptographic signing)"""
+    form_data = json.loads(request.body)
+    signer = TimestampSigner()
+    sign = form_data['sign']
+    try:
+        signer.unsign(sign, MAX_AGE)
+    except:
+        return HttpResponse('No access')
+    pk = int(form_data['pk'])
+    question = Question.objects.get(pk=pk)
+    if request.method == "POST":
+            form = QuestionFormM(form_data, instance=question)
+            if form.is_valid():
+                form.save()
+                return HttpResponse('successfully')
 
 
 def imitation_of_calculations():
