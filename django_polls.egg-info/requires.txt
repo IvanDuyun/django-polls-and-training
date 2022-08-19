@@ -13,4 +13,3 @@ charset-normalizer>=2.1
 idna>=3.3
 requests>=2.28
 urllib3>=1.26
-ECPy>=1.2

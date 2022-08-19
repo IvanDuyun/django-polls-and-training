@@ -18,12 +18,12 @@ def send_requests_for_training_cache(cnt, time_out=0):
         time.sleep(time_out)
 
 
-def send_json_for_test_question_api(question_id, text_sign):
-    sign = get_sign(text_sign)
+def send_json_for_test_question_api(pk):
+    sign = get_sign(pk)
     print(sign)
-    param = {"pk": "3", "question_text": "how a u", "pub_date": "2022-08-05 14:37:21", "author": "15", "sign": sign}
+    param = {"pk": sign, "question_text": "how a uuuu", "pub_date": "2022-08-05 14:37:21", "author": "15"}
     json_param = json.dumps(param)
-    url = "http://127.0.0.1:8000/polls/%s/private/" % question_id
+    url = "http://127.0.0.1:8000/polls/%s/private/" % pk
     resp = requests.post(url, data=json_param)
     print(resp.content)
 
@@ -33,4 +33,4 @@ def get_sign(text_sign):
     return signer.sign(text_sign)
 
 
-send_json_for_test_question_api(3, 'aloha')
+send_json_for_test_question_api(3)

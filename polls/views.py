@@ -28,12 +28,11 @@ def question_api(request, pk):
     """Task 11 (Json and Cryptographic signing)"""
     form_data = json.loads(request.body)
     signer = TimestampSigner()
-    sign = form_data['sign']
+    sign = form_data['pk']
     try:
-        signer.unsign(sign, MAX_AGE)
+        pk = signer.unsign(sign, MAX_AGE)
     except:
         return HttpResponse('No access')
-    pk = int(form_data['pk'])
     question = Question.objects.get(pk=pk)
     if request.method == "POST":
             form = QuestionFormM(form_data, instance=question)
