@@ -1,6 +1,6 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from polls.models import Choice
-from django.db.models import F, Sum, Count, Q
+from django.db.models import F
 from django.db import transaction
 
 import time

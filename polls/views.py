@@ -13,8 +13,32 @@ from polls import REDIRECT_FIELD_NAME
 from django.utils.encoding import iri_to_uri
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
-from django.views.decorators.http import condition, etag
+from django.views.decorators.http import condition
+from django.views.decorators.csrf import csrf_exempt
+from django.core.signing import TimestampSigner
 import time
+import json
+
+
+MAX_AGE = 1
+
+
+@csrf_exempt
+def question_api(request, pk):
+    """Task 11 (Json and Cryptographic signing)"""
+    form_data = json.loads(request.body)
+    signer = TimestampSigner()
+    sign = form_data['pk']
+    try:
+        pk = signer.unsign(sign, MAX_AGE)
+    except:
+        return HttpResponse('No access')
+    question = Question.objects.get(pk=pk)
+    if request.method == "POST":
+            form = QuestionFormM(form_data, instance=question)
+            if form.is_valid():
+                form.save()
+                return HttpResponse('successfully')
 
 
 def imitation_of_calculations():

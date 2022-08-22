@@ -1,4 +1,4 @@
-from django.forms import FloatField, IntegerField, ChoiceField, inlineformset_factory
+from django.forms import FloatField, IntegerField
 from . import models
 from django import forms
 from django.forms.models import inlineformset_factory

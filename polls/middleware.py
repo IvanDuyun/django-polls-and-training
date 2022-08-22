@@ -1,5 +1,4 @@
 import hashlib
-from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate

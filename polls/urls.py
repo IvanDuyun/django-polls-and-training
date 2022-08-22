@@ -15,6 +15,7 @@ urlpatterns = [
     path('<int:pk>/update/', views.QuestionUpdateView.as_view(), name='question_update'),
     path('new_m/', views.question_create_view, name='question_new_m'),  # m - manually
     path('update_m/<int:pk>', views.question_update_view, name='question_update_m'),
+    path('<int:pk>/private/', views.question_api, name='question_api'),
     path('agreement/<int:profile_id>', views.set_agreement, name='agreement'),
     path('for_test_cache_with_decorator/', views.view_for_test_cache_with_decorator),
     path('for_test_cache_manually/', views.view_for_test_cache_manually),
