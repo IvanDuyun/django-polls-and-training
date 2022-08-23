@@ -13,12 +13,14 @@ polls/__init__.py
 polls/admin.py
 polls/apps.py
 polls/backends.py
+polls/celery.py
 polls/custom_layout_object.py
 polls/forms.py
 polls/middleware.py
 polls/models.py
 polls/send_requests.py
 polls/signals.py
+polls/tasks.py
 polls/tests.py
 polls/urls.py
 polls/views.py

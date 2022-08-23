@@ -16,11 +16,17 @@ from django.core.cache import cache
 from django.views.decorators.http import condition
 from django.views.decorators.csrf import csrf_exempt
 from django.core.signing import TimestampSigner
+from .tasks import simulate_background_task
 import time
 import json
 
 
 MAX_AGE = 1
+
+
+def test_celery(request):
+    simulate_background_task.delay()
+    return HttpResponse('Вычисления начаты')
 
 
 @csrf_exempt
@@ -46,7 +52,7 @@ def imitation_of_calculations():
     return 'ok'
 
 
-def view_for_test_cache_manually(request):
+def test_cache_manually(request):
     ok = cache.get('ok')
     if not ok:
         ok = imitation_of_calculations()
@@ -55,7 +61,7 @@ def view_for_test_cache_manually(request):
 
 
 @cache_page(60)
-def view_for_test_cache_with_decorator(request):
+def test_cache_with_decorator(request):
     ok = imitation_of_calculations()
     return HttpResponse(ok)
 
