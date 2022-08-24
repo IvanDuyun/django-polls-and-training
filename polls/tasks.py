@@ -1,9 +1,12 @@
 from time import sleep
-from celery import shared_task
+from celery import Celery
+from django.conf import settings
 
 
-@shared_task
-def simulate_background_task():
+app = Celery('tasks', broker=settings.CELERY_BROKER_URL)
+
+
+@app.task
+def simulate_background_task(x, y):
     sleep(10)
-    value = 2 + 2
-    return value
+    return x + y

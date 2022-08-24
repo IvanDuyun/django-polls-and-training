@@ -25,8 +25,8 @@ MAX_AGE = 1
 
 
 def test_celery(request):
-    simulate_background_task.delay()
-    return HttpResponse('Вычисления начаты')
+    result = simulate_background_task.delay(2, 2)
+    return HttpResponse('Start calculate')
 
 
 @csrf_exempt
