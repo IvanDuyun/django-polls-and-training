@@ -1,9 +1,5 @@
 from time import sleep
-from celery import Celery
-from django.conf import settings
-
-
-app = Celery('tasks', backend=settings.CELERY_RESULT_BACKEND, broker=settings.CELERY_BROKER_URL)
+from polls.celery import app
 
 
 @app.task

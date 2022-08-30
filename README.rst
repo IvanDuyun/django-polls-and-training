@@ -84,6 +84,10 @@ Quick (maybe) start
 -----------
 In settings.py:
 
+    0. Add import config:
+
+        from decouple import config
+
     1. Add "polls" to your INSTALLED_APPS setting like this::
 
         INSTALLED_APPS = [
@@ -169,8 +173,8 @@ In settings.py:
         }
 
     6. ADD CELERY:
-        CELERY_BROKER_URL = "redis://localhost:6379"
-        CELERY_RESULT_BACKEND = "redis://localhost:6379"
+        CELERY_BROKER_URL = config('CELERY_BROKER_URL')
+        CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND')
 
 
 2. Include the polls URLconf in your project urls.py like this::
