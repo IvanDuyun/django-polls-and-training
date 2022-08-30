@@ -25,7 +25,7 @@ MAX_AGE = 1
 
 
 def test_celery(request):
-    result = simulate_background_task.delay(2, 2)
+    simulate_background_task.delay(2, 2)
     return HttpResponse('Start calculate')
 
 
